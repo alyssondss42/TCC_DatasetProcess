@@ -77,9 +77,10 @@ def write_txt(filename, points):
         txt_file.close()
 
 
+# TODO: Add split do dataset
 def convert_2_yolo(json_path, img_path):
     """
-
+    Main conversor.
     :param json_path: Path dos arquivos json no formato ALSS.
     :param img_path: Path das imagens.
     :return:
