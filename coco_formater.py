@@ -45,7 +45,7 @@ def create_gt(data, img_id, ann_id, image_list, annotation_list):
 
     image_list.append(
         {
-            'filename': img_name,
+            'file_name': img_name,
             'height': img_height,
             'width': img_width,
             'id': img_id
