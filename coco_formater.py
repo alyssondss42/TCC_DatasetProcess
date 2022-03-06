@@ -26,11 +26,17 @@ def split_data(file_path):
     data_files = list(filter(lambda file: file.endswith('.json'), all_files))
     shuffle(data_files)
 
-    split = 0.8
+    split = 0.7
     split_index = floor(len(data_files) * split)
     training = data_files[:split_index]
-    testing = data_files[split_index:]
-    return training, testing
+
+    remaining = data_files[split_index:]
+
+    cut_point = floor(len(remaining) * 0.5)
+    testing = remaining[:cut_point]
+    validation = remaining[cut_point:]
+
+    return training, testing, validation
 
 
 def copy_img(img_name, img_path, split_path):
@@ -75,16 +81,20 @@ def convert_2_coco(json_path):
 
     images_train = []
     annotations_train = []
+
     images_test = []
     annotations_test = []
 
-    training, testing = split_data(json_path)
+    images_val = []
+    annotations_val = []
+
+    training, testing, validation = split_data(json_path)
 
     for train_file in training:
         with open(os.path.join(json_path, train_file), 'r', encoding='utf-8') as file:
             data = json.load(file)
 
-            images_train, annotations_train, ann_id = create_gt(data, img_id, ann_id,  image_list=images_train,
+            images_train, annotations_train, ann_id = create_gt(data, img_id, ann_id, image_list=images_train,
                                                                 annotation_list=annotations_train)
             img_id += 1
 
@@ -118,17 +128,30 @@ def convert_2_coco(json_path):
         json_obj = json.dumps(data, indent=4)
         file.write(json_obj)
 
+    for val_file in validation:
+        with open(os.path.join(json_path, val_file), 'r', encoding='utf-8') as file:
+            data = json.load(file)
+
+            images_val, annotations_val, ann_id = create_gt(data, img_id, ann_id, image_list=images_val,
+                                                            annotation_list=annotations_val)
+            img_id += 1
+
+            copy_img(img_name=data['img'], img_path=img_pth, split_path='output/coco/val/img')
+
+    with open(os.path.join('output/coco/val/ann', 'val.json'), 'a', encoding='utf-8') as file:
+        data = {
+            'images': images_train,
+            'annotations': annotations_train,
+            'categories': [{'id': 0, 'name': 'signature'}]
+        }
+        json_obj = json.dumps(data, indent=4)
+        file.write(json_obj)
+
 
 if __name__ == '__main__':
-    img_pth = r'C:\Users\Alysson\Downloads\Poli-UPE-20211112T232533Z-001\Poli-UPE\10º Período\TCC\Dataset\Processed\Tobacco\img'
-    json_pth = r'C:\Users\Alysson\Downloads\Poli-UPE-20211112T232533Z-001\Poli-UPE\10º Período\TCC\Dataset\Processed\Tobacco\json_gt'
+    img_pth = r'C:\Users\Alysson\Downloads\tcc_dataset\img'
+    json_pth = r'C:\Users\Alysson\Downloads\tcc_dataset\json_gt'
 
     convert_2_coco(json_pth)
 
     print('ue')
-
-
-
-
-
-

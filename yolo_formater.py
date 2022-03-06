@@ -1,5 +1,6 @@
 import os
 import json
+import random
 import cv2 as cv
 
 
@@ -21,15 +22,17 @@ def compute_scaling_factor(page_width, page_height, max_height, max_width):
     return scaling_factor
 
 
-def resize_img(og_img, filename, factor):
+def resize_img(og_img, filename, factor, split_path):
     """
     Rescala imagem de acordo com o fator.
+    :param split_path: train, test, val path
     :param og_img: Imagem em cv2.
     :param filename: Nome do arquivo.
     :param factor: Fator de resize.
     :return: Imagem rescalada e o nome do arquivo.
     """
     res_path = r'C:\Users\Alysson\PycharmProjects\TCC_DatasetProcess\output\yolo\resized'
+    res_path = res_path + '\\' + split_path
 
     res_img = cv.resize(og_img, None, fx=factor, fy=factor, interpolation=cv.INTER_AREA)
     jpg_filename = filename.split('.')[0] + '.jpg'
@@ -58,14 +61,16 @@ def get_points_scaled(signature_dict, factor):
     return x_scaled, y_scaled, width_scaled, height_scaled
 
 
-def write_txt(filename, points):
+def write_txt(filename, points, split_path):
     """
     Escreve arquivo .txt no padrão do YOLOV5.
+    :param split_path: train, test, val
     :param filename: Nome da imagem em .jpg
     :param points: Ponto a serem adicionados no txt. Ordem: [x, y, w, h]
     :return: None
     """
     txt_path = r'C:\Users\Alysson\PycharmProjects\TCC_DatasetProcess\output\yolo\txt_gt'
+    txt_path = txt_path + '\\' + split_path
     txt_name = filename.split('.')[0]+'.txt'
 
     with open(os.path.join(txt_path, txt_name), 'a', encoding='utf-8') as txt_file:
@@ -75,6 +80,32 @@ def write_txt(filename, points):
         txt_file.write(gt_string)
         txt_file.write('\n')
         txt_file.close()
+
+
+def split_dataset(list_files: list):
+    random.seed()
+    random.shuffle(list_files)
+
+    cut_point = int(len(list_files)*0.8)
+    train_files = list_files[:cut_point]
+    remain_files = list_files[cut_point:]
+
+    cut_point = int(len(remain_files)*0.5)
+    val_files = remain_files[:cut_point]
+    test_files = remain_files[cut_point:]
+
+    return train_files, val_files, test_files
+
+
+def get_partition(file_name, train, val, test):
+    if file_name in train:
+        split_type = 'train'
+    elif file_name in val:
+        split_type = 'val'
+    else:
+        split_type = 'test'
+
+    return split_type
 
 
 # TODO: Add split do dataset
@@ -90,6 +121,7 @@ def convert_2_yolo(json_path, img_path):
     max_img_height = 640
 
     for (root, dirnames, files) in os.walk(json_path):
+        train_files, val_files, test_files = split_dataset(files)
         for filename in files:
             with open(os.path.join(root, filename), 'r', encoding='utf-8') as jfile:
                 data = json.load(jfile)
@@ -103,11 +135,10 @@ def convert_2_yolo(json_path, img_path):
             orig_img = cv.imread(os.path.join(img_path, img_name))
             sc_factor = compute_scaling_factor(page_width=img_width, page_height=img_height,
                                                max_width=max_img_width, max_height=max_img_height)
-            if sc_factor == 1:
-                res_img = orig_img
-                new_img_name = img_name.split('.') + '.jpg'
-            else:
-                res_img, new_img_name = resize_img(og_img=orig_img, filename=img_name, factor=sc_factor)
+
+            split_tp = get_partition(filename, train_files, val_files, test_files)
+            res_img, new_img_name = resize_img(og_img=orig_img, filename=img_name, factor=sc_factor,
+                                               split_path=split_tp)
 
             img_height_scaled, img_width_scaled = res_img.shape[:2]
 
@@ -122,12 +153,15 @@ def convert_2_yolo(json_path, img_path):
                 w_norm = w_scaled/img_width_scaled
                 h_norm = h_scaled/img_height_scaled
 
-                write_txt(filename=new_img_name, points=[x_center_norm, y_center_norm, w_norm, h_norm])
+                write_txt(filename=new_img_name, points=[x_center_norm, y_center_norm, w_norm, h_norm],
+                          split_path=split_tp)
+
+            print('File {} to {} partition'.format(filename, split_tp))
 
 
 if __name__ == '__main__':
     img_pth = r'C:\Users\Alysson\Downloads\test_yolor\img'
-    json_pth = r'C:\Users\Alysson\Downloads\test_yolor\json'
+    json_pth = r'C:\Users\Alysson\Downloads\test_yolor\json_gt'
 
     convert_2_yolo(json_pth, img_pth)
 
