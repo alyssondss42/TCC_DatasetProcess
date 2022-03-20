@@ -3,6 +3,11 @@ import json
 import shutil
 
 
+def copy_json(json_path, json_name):
+    dest_path = 'output/json_gt'
+    shutil.copy(os.path.join(json_path, json_name), os.path.join(dest_path, json_name))
+
+
 def copy_img(img_path, img_name):
     dest_path = 'output/img'
     shutil.copy(os.path.join(img_path, img_name), os.path.join(dest_path, img_name))

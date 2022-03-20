@@ -3,7 +3,7 @@ import json
 import cv2 as cv
 
 
-def resize_img(orig_img, img_name, max_height=640, max_width=480):
+def resize_img(orig_img, img_name, max_height=1280, max_width=960):
     page_height, page_width, _ = orig_img.shape
 
     scaling_factor = 1
@@ -66,13 +66,14 @@ def prepare_dataset(image_path, vgg_path):
                             }
                         })
 
-                    create_alss_json_gt(img_name=filename, img_w=img_w, img_h=img_h, c_sig=count_sig, sig_list=sig_list)
-                    resize_img(orig_img=img, img_name=filename)
+                    if count_sig != 0:
+                        create_alss_json_gt(img_name=filename, img_w=img_w, img_h=img_h, c_sig=count_sig, sig_list=sig_list)
+                        resize_img(orig_img=img, img_name=filename)
 
 
 if __name__ == '__main__':
-    image_pth = r'C:\Users\Alysson\Downloads\Xerox_dataset\assinados'
-    json_dir = r'C:\Users\Alysson\Downloads\Xerox_dataset\tcc_dataset_test_json.json'
+    image_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\Lote9\img'
+    json_dir = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\Lote9\ann\lote9_json.json'
 
     prepare_dataset(image_path=image_pth, vgg_path=json_dir)
 

@@ -31,7 +31,7 @@ def resize_img(og_img, filename, factor, split_path):
     :param factor: Fator de resize.
     :return: Imagem rescalada e o nome do arquivo.
     """
-    res_path = r'C:\Users\Alysson\PycharmProjects\TCC_DatasetProcess\output\yolo\resized'
+    res_path = r'C:\Users\Alysson\PycharmProjects\TCC_DatasetProcess\output\yolo\images'
     res_path = res_path + '\\' + split_path
 
     res_img = cv.resize(og_img, None, fx=factor, fy=factor, interpolation=cv.INTER_AREA)
@@ -69,7 +69,7 @@ def write_txt(filename, points, split_path):
     :param points: Ponto a serem adicionados no txt. Ordem: [x, y, w, h]
     :return: None
     """
-    txt_path = r'C:\Users\Alysson\PycharmProjects\TCC_DatasetProcess\output\yolo\txt_gt'
+    txt_path = r'C:\Users\Alysson\PycharmProjects\TCC_DatasetProcess\output\yolo\labels'
     txt_path = txt_path + '\\' + split_path
     txt_name = filename.split('.')[0]+'.txt'
 
@@ -117,8 +117,8 @@ def convert_2_yolo(json_path, img_path):
     :return:
     """
     # Essas medidas são padrão do YOLO com COCO dataset.
-    max_img_width = 480
-    max_img_height = 640
+    max_img_width = 960
+    max_img_height = 1280
 
     for (root, dirnames, files) in os.walk(json_path):
         train_files, val_files, test_files = split_dataset(files)
@@ -160,8 +160,8 @@ def convert_2_yolo(json_path, img_path):
 
 
 if __name__ == '__main__':
-    img_pth = r'C:\Users\Alysson\Downloads\test_yolor\img'
-    json_pth = r'C:\Users\Alysson\Downloads\test_yolor\json_gt'
+    img_pth = r'C:\Users\Alysson\Downloads\tcc_dataset_v2\img'
+    json_pth = r'C:\Users\Alysson\Downloads\tcc_dataset_v2\json_gt'
 
     convert_2_yolo(json_pth, img_pth)
 
