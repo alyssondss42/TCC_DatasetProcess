@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 import shutil
 
 
@@ -10,7 +11,8 @@ def copy_json(json_path, json_name):
 
 def copy_img(img_path, img_name):
     dest_path = 'output/img'
-    shutil.copy(os.path.join(img_path, img_name), os.path.join(dest_path, img_name))
+    new_name = uuid.uuid4().hex + '.jpg'
+    shutil.copy(os.path.join(img_path, img_name), os.path.join(dest_path, new_name))
 
 
 def create_json_gt(filename, width, height, signatures_zones, img_extension):

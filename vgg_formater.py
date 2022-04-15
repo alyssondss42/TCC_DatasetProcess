@@ -68,12 +68,12 @@ def prepare_dataset(image_path, vgg_path):
 
                     if count_sig != 0:
                         create_alss_json_gt(img_name=filename, img_w=img_w, img_h=img_h, c_sig=count_sig, sig_list=sig_list)
-                        resize_img(orig_img=img, img_name=filename)
+                        # resize_img(orig_img=img, img_name=filename)
 
 
 if __name__ == '__main__':
-    image_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\Lote9\img'
-    json_dir = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\Lote9\ann\lote9_json.json'
+    image_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\LoteCertidao_Treino\raw_img'
+    json_dir = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\LoteCertidao_Treino\ann.json'
 
     prepare_dataset(image_path=image_pth, vgg_path=json_dir)
 

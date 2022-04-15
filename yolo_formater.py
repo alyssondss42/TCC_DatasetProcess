@@ -160,8 +160,8 @@ def convert_2_yolo(json_path, img_path):
 
 
 if __name__ == '__main__':
-    img_pth = r'C:\Users\Alysson\Downloads\tcc_dataset_v2\img'
-    json_pth = r'C:\Users\Alysson\Downloads\tcc_dataset_v2\json_gt'
+    img_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\LoteCertidao_Treino\raw_img'
+    json_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\LoteCertidao_Treino\json_alss'
 
     convert_2_yolo(json_pth, img_pth)
 

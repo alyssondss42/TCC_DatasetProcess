@@ -90,6 +90,7 @@ def convert_2_coco(json_path):
 
     training, testing, validation = split_data(json_path)
 
+    # training = [f for f in os.listdir(json_path) if os.path.isfile(os.path.join(json_path, f))]
     for train_file in training:
         with open(os.path.join(json_path, train_file), 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -109,6 +110,7 @@ def convert_2_coco(json_path):
         json_obj = json.dumps(data, indent=4)
         file.write(json_obj)
 
+    # testing = [f for f in os.listdir(json_path) if os.path.isfile(os.path.join(json_path, f))]
     for test_file in testing:
         with open(os.path.join(json_path, test_file), 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -128,6 +130,7 @@ def convert_2_coco(json_path):
         json_obj = json.dumps(data, indent=4)
         file.write(json_obj)
 
+    # validation = [f for f in os.listdir(json_path) if os.path.isfile(os.path.join(json_path, f))]
     for val_file in validation:
         with open(os.path.join(json_path, val_file), 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -140,8 +143,8 @@ def convert_2_coco(json_path):
 
     with open(os.path.join('output/coco/val/ann', 'val.json'), 'a', encoding='utf-8') as file:
         data = {
-            'images': images_train,
-            'annotations': annotations_train,
+            'images': images_val,
+            'annotations': annotations_val,
             'categories': [{'id': 0, 'name': 'signature'}]
         }
         json_obj = json.dumps(data, indent=4)
@@ -149,8 +152,8 @@ def convert_2_coco(json_path):
 
 
 if __name__ == '__main__':
-    img_pth = r'C:\Users\Alysson\Downloads\tcc_dataset\img'
-    json_pth = r'C:\Users\Alysson\Downloads\tcc_dataset\json_gt'
+    img_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\LoteCertidao_Treino\raw_img'
+    json_pth = r'C:\Users\Alysson\Downloads\TCC_dataset_xerox\LoteCertidao_Treino\json_alss'
 
     convert_2_coco(json_pth)
 
